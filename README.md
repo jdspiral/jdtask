@@ -12,5 +12,7 @@ Create a database named whatever you like and replace the `dbname` with your dat
 
 ##Usage
 To see all command options, run
-	task
+```bash
+task
+```
 with no command arguments.
