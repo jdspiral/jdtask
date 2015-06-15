@@ -1,0 +1,73 @@
+#!/bin/bash
+
+dbname="INSERT DATABASE NAME HERE"
+table_schema="(id INT NOT NULL AUTO_INCREMENT, name VARCHAR(255), description TEXT, PRIMARY KEY(id))"
+action=$1
+list_name=$2
+name=$3
+desc=$4
+id=$5
+
+if [[ $# -lt 1 ]]
+then
+
+echo "*****************************************************"
+echo "Task Application by Josh Hathcock"
+echo "*****************************************************"
+echo ""
+echo "  Usage:"
+echo "  task (new-list | delete-list | add-task | delete-task | ls)"
+echo "  new-list: Creates a new list"
+echo "  delete-list: Deletes a list and all task in list"
+echo "  add-task: task add-task task_name task_description (Creates a new task)"
+echo "  delete-task: task delete-task task_id (Deletes a specific task)"
+echo "  ls: task ls (Lists task), task ls list_name (Lists all task in a list)"
+echo ""
+echo ""
+echo ""
+fi
+
+function create_list {
+        echo CREATE TABLE $list_name$table_schema | mysql $dbname
+}
+
+function add_task {
+        echo 'INSERT INTO '${list_name}' (name, description) VALUES ("'${name}'","'${desc}'")' | mysql $dbname
+}
+
+function delete_task {
+        echo DELETE FROM ${list_name} WHERE ID=$id | mysql $dbname
+}
+
+function delete_list {
+        echo DROP TABLE ${list_name} | mysql $dbname
+}
+
+function show_lists {
+        #Function lists all lists
+        #Function lists tasks in a list if the list name is set
+        if [[ -z ${list_name} ]]
+        then
+                echo SHOW TABLES | mysql $dbname
+        else
+                echo SELECT id,name,description FROM ${list_name} | mysql $dbname
+fi
+}
+
+case $action in
+        new-list)
+                create_list
+        ;;
+        delete-list)
+                delete_list
+        ;;
+        add-task)
+                add_task
+        ;;
+        delete-task)
+                delete_task
+        ;;
+        ls)
+                show_lists
+        ;;
+esac
